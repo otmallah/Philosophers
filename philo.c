@@ -1,5 +1,7 @@
 #include "philo.h"
 
+int a;
+
 void    checker_input_of_user(char **info_philo_tab)
 {
 	int i;
@@ -24,21 +26,39 @@ void    checker_input_of_user(char **info_philo_tab)
 	}
 }
 
+void	eats_some_spaghetti(t_philo *philo)
+{
+	printf("eating now %d\n", a);
+	usleep(philo->holder[1] * 100000);
+	a++;
+}
+
+void	sleeping(t_philo *philo)
+{
+	printf("sleeping now %d\n" , a);
+	usleep(philo->holder[2] * 100000);
+	a++;
+}
+
+int		check_time_to_die(t_philo *philo)
+{
+	if (philo->holder[1] + philo->holder[2] >= philo->holder[0])
+	{
+		printf("philo is died %d\n", a);
+		exit(0);
+	}
+}
+
 void    *fun(void *times)
 {
 	t_philo i;
 	int		result;
 
 	i = *(t_philo *)times;
-	while (TRUE)
-	{
-		pthread_mutex_lock(&i.mutex);
-		printf("time to sleep = %d\n", i.holder[2]);
-		printf("time to eats = %d\n", i.holder[1]);
-		printf("time to die = %d\n", i.holder[0]);
-		pthread_mutex_unlock(&i.mutex);
-		usleep(1000000);
-	}
+	pthread_mutex_lock(&i.mutex);
+	eats_some_spaghetti(&i);
+	pthread_mutex_unlock(&i.mutex);
+	sleeping(&i);
 }
 
 void    ft_creat_thread(char **tab, t_philo *philo)
@@ -65,7 +85,6 @@ int main(int ac, char **av)
 {
 	t_philo philo;
 
-	philo.a = 5 ;
 	if (ac == 5)
 	{
 		checker_input_of_user(av);
