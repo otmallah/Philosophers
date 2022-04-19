@@ -1,6 +1,7 @@
 #include "philo.h"
 
 int a;
+pthread_mutex_t mtx;
 
 void    checker_input_of_user(char **info_philo_tab)
 {
@@ -45,20 +46,22 @@ int		check_time_to_die(t_philo *philo)
 	if (philo->holder[1] + philo->holder[2] >= philo->holder[0])
 	{
 		printf("philo is died %d\n", a);
-		exit(0);
 	}
 }
 
+int x;
+
 void    *fun(void *times)
 {
-	t_philo i;
+	t_philo *i;
 	int		result;
 
-	i = *(t_philo *)times;
-	pthread_mutex_lock(&i.mutex);
-	eats_some_spaghetti(&i);
-	pthread_mutex_unlock(&i.mutex);
-	sleeping(&i);
+	i = (t_philo *)times;
+	while (TRUE)
+	{
+		pthread_mutex_lock(&i->mutex);
+		pthread_mutex_unlock(&i->mutex);
+	}
 }
 
 void    ft_creat_thread(char **tab, t_philo *philo)
@@ -69,15 +72,18 @@ void    ft_creat_thread(char **tab, t_philo *philo)
 	i = 0;
 	pthread_mutex_init(&philo->mutex, NULL);
 	philo->philosophers = malloc(sizeof(pthread_t) *  atoi(tab[1]));
-	philo->holder[0] = atoi(tab[2]);
-	philo->holder[1] = atoi(tab[3]);
-	philo->holder[2] = atoi(tab[4]);
+	philo->holder[0] = atoi(tab[1]);
+	philo->holder[1] = atoi(tab[2]);
+	philo->holder[2] = atoi(tab[3]);
+	philo->holder[3] = atoi(tab[4]);
 	while (i < atoi(tab[1]))
 	{
 		pthread_create(&philo->philosophers[i], NULL, fun, (void *)philo);
-		pthread_join(philo->philosophers[i], NULL);
 		i++;
 	}
+	i = 0;
+	while(++i < atoi(tab[1]))
+		pthread_join(philo->philosophers[i], NULL);
 	pthread_mutex_destroy(&philo->mutex);
 }
 
