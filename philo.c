@@ -1,7 +1,7 @@
 #include "philo.h"
 
 int a;
-pthread_mutex_t mtx;
+int x = 0;
 
 void    checker_input_of_user(char **info_philo_tab)
 {
@@ -29,27 +29,25 @@ void    checker_input_of_user(char **info_philo_tab)
 
 void	eats_some_spaghetti(t_philo *philo)
 {
-	printf("eating now %d\n", a);
+	printf("eating now %d\n", x);
 	usleep(philo->holder[1] * 100000);
-	a++;
 }
 
 void	sleeping(t_philo *philo)
 {
-	printf("sleeping now %d\n" , a);
+	printf("sleeping now %d\n" , x);
 	usleep(philo->holder[2] * 100000);
-	a++;
 }
 
-int		check_time_to_die(t_philo *philo)
+void		check_time_to_die(t_philo *philo)
 {
 	if (philo->holder[1] + philo->holder[2] >= philo->holder[0])
 	{
-		printf("philo is died %d\n", a);
+		printf("philo is died %d\n", x);
+		exit(0);
 	}
 }
 
-int x;
 
 void    *fun(void *times)
 {
@@ -59,9 +57,35 @@ void    *fun(void *times)
 	i = (t_philo *)times;
 	while (TRUE)
 	{
-		pthread_mutex_lock(&i->mutex);
-		pthread_mutex_unlock(&i->mutex);
+		pthread_mutex_lock(&i->mutex[x]);
+		eats_some_spaghetti(i);
+		sleeping(i);
+		check_time_to_die(i);
+		pthread_mutex_unlock(&i->mutex[x]);
+		x++;
+		if (x == i->holder[0] - 1)
+			x = 0;
+		// printf("num = %d\n", x);
+		// pthread_mutex_lock(&i->mutex[x]);
+		// // pthread_mutex_lock(&i->mutex[(x + 1) % i->holder[0]]);
+		// eats_some_spaghetti(i);
+		// sleeping(i);
+		// pthread_mutex_unlock(&i->mutex[x]);
+		// printf("num = %d\n", x);
+		// puts("2");
+		// pthread_mutex_lock(&i->mutex[(x + 1) % i->holder[0]]);
+		// x++;
+		// pthread_mutex_lock(&i->mutex[(x - 1) % i->holder[0]]);
+		// pthread_mutex_lock(&i->mutex[(x + 1) % i->holder[0]]);
+		// eats_some_spaghetti(i);
+		// sleeping(i);
+		// pthread_mutex_unlock(&i->mutex[(x - 1) % i->holder[0]]);
+		// pthread_mutex_unlock(&i->mutex[(x + 1) % i->holder[0]]);
+		// x++;
+		//pthread_mutex_unlock(&i->mutex[(x + 1) % i->holder[0]]);
+		//printf("x == %d\n", ((x + 1) % i->holder[0]));
 	}
+
 }
 
 void    ft_creat_thread(char **tab, t_philo *philo)
@@ -70,7 +94,13 @@ void    ft_creat_thread(char **tab, t_philo *philo)
 	int     holder[3];
 
 	i = 0;
-	pthread_mutex_init(&philo->mutex, NULL);
+	philo->mutex = malloc(sizeof(pthread_mutex_t) * atoi(tab[1]));
+	while (i < atoi(tab[1]))
+	{
+		pthread_mutex_init(&philo->mutex[i], NULL);
+		i++;
+	}
+	i = 0;
 	philo->philosophers = malloc(sizeof(pthread_t) *  atoi(tab[1]));
 	philo->holder[0] = atoi(tab[1]);
 	philo->holder[1] = atoi(tab[2]);
@@ -84,7 +114,12 @@ void    ft_creat_thread(char **tab, t_philo *philo)
 	i = 0;
 	while(++i < atoi(tab[1]))
 		pthread_join(philo->philosophers[i], NULL);
-	pthread_mutex_destroy(&philo->mutex);
+	i = 0;
+	while (++i < atoi(tab[1]))
+	{
+		puts("*-*-*-*-*-**-*");
+		pthread_mutex_destroy(&philo->mutex[i]);
+	}
 }
 
 int main(int ac, char **av)
