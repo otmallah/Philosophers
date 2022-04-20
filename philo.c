@@ -29,14 +29,14 @@ void    checker_input_of_user(char **info_philo_tab)
 
 void	eats_some_spaghetti(t_philo *philo, int a)
 {
-	printf("eating now %d\n", a);
-	usleep(philo->holder[1] * 100000);
+	printf("%d philo is eating\n", a);
+	usleep(philo->holder[1] * 1000);
 }
 
 void	sleeping(t_philo *philo, int a)
 {
-	printf("sleeping now %d\n" , a);
-	usleep(philo->holder[2] * 100000);
+	printf("%d philo is sleeping\n" , a);
+	usleep(philo->holder[2] * 1000);
 }
 
 void		check_time_to_die(t_philo *philo, int a)
@@ -59,11 +59,13 @@ void    *fun(void *times)
 	a = i->a;
 	while (TRUE)
 	{
+		printf("%d philo is thinking\n", a);
 		pthread_mutex_lock(&i->mutex[a]);
+		pthread_mutex_lock(&i->mutex[(a + 1) % i->holder[0]]);
 		eats_some_spaghetti(i, a);
 		sleeping(i, a);
-		check_time_to_die(i, a);
 		pthread_mutex_unlock(&i->mutex[a]);
+		pthread_mutex_unlock(&i->mutex[(a + 1) % i->holder[0]]);
 	}
 
 }
@@ -80,7 +82,6 @@ void    ft_creat_thread(char **tab, t_philo *philo)
 		pthread_mutex_init(&philo->mutex[i], NULL);
 		i++;
 	}
-	pthread_mutex_init(&philo->lock, NULL);
 	i = 0;
 	philo->philosophers = malloc(sizeof(pthread_t) *  atoi(tab[1]));
 	philo->holder[0] = atoi(tab[1]);
@@ -91,9 +92,7 @@ void    ft_creat_thread(char **tab, t_philo *philo)
 	{
 		pthread_create(&philo->philosophers[philo->a], NULL, fun, (void *)philo);
 		usleep(100);
-		pthread_mutex_lock(&philo->lock);
 		philo->a++;
-		pthread_mutex_unlock(&philo->lock);
 	}
 	i = 0;
 	while(++i < atoi(tab[1]))
