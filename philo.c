@@ -41,9 +41,9 @@ void	sleeping(t_philo *philo, int a)
 
 void		check_time_to_die(t_philo *philo, int a)
 {
-	if (philo->holder[1] + philo->holder[2] >= philo->holder[0])
+	if (philo->holder[2] + philo->holder[3] >= philo->holder[1])
 	{
-		printf("philo is died %d\n", a);
+		printf("%d philo is died\n", a);
 		exit(0);
 	}
 }
@@ -61,9 +61,11 @@ void    *fun(void *times)
 	{
 		printf("%d philo is thinking\n", a);
 		pthread_mutex_lock(&i->mutex[a]);
+		printf("%d philo has taken a fork\n", a);
 		pthread_mutex_lock(&i->mutex[(a + 1) % i->holder[0]]);
 		eats_some_spaghetti(i, a);
 		sleeping(i, a);
+		check_time_to_die(i, a);
 		pthread_mutex_unlock(&i->mutex[a]);
 		pthread_mutex_unlock(&i->mutex[(a + 1) % i->holder[0]]);
 	}
