@@ -10,3 +10,9 @@ typedef struct s_philo {
     int             holder[4];
     int             a;
 }   t_philo;
+
+
+//utils 
+
+int	ft_atoi(const char *str);
+int	ft_strcmp(char *s1, char *s2);
