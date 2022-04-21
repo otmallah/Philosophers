@@ -67,15 +67,15 @@ int	main(int ac, char **av)
 	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
-		philo[i].mutex = malloc(sizeof(pthread_mutex_t *));
-		philo[i].next_fork = malloc(sizeof(pthread_mutex_t *));
+		philo[i].mutex = malloc(sizeof(pthread_mutex_t));
+		philo[i].next_fork = malloc(sizeof(pthread_mutex_t));
 		pthread_mutex_init(philo[i].mutex, NULL);
 		i++;
 	}
 	i = 0;
 	while (i < ft_atoi(av[1]))
 	{
-		philo[i].next_fork = philo[(i + 1) % ft_atoi(av[1])].mutex;
+		philo[i].next_fork = philo[((i + 1) % ft_atoi(av[1]))].mutex;
 		i++;
 	}
 	i = 0;

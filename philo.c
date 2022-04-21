@@ -75,14 +75,16 @@ void    *fun(void *arg)
 	a = philo->a;
 	while (TRUE)
 	{
+		pthread_mutex_lock(philo->next_fork);
 		pthread_mutex_lock(philo->mutex);
 		printf("%ld ms philo %d has taken a fork\n", get_current_time(), a);
-		pthread_mutex_lock(philo->next_fork);
 		printf("%ld ms philo %d has taken next fork\n", get_current_time(), a);
 		eats_some_spaghetti(philo, a);
 		sleeping(philo, a);
-		pthread_mutex_unlock(philo->mutex);
 		pthread_mutex_unlock(philo->next_fork);
+		printf("%ld ms philo %d has put down right fork\n", get_current_time(), a);
+		pthread_mutex_unlock(philo->mutex);
+		printf("%ld ms philo %d has put down left fork\n", get_current_time(), a);
 		printf("%ld philo %d is thinking\n", get_current_time(), a);
 	}
 }
