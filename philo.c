@@ -48,13 +48,13 @@ void	eats_some_spaghetti(t_philo *philo, int a)
 {
 	// philo->save_current_time = get_current_time();
 	printf("%ld philo %d is eating\n", get_current_time(), a);
-	usleep(philo->holder[1] * 1000);
+	usleep(philo->holder[4] * 1000);
 }
 
 void	sleeping(t_philo *philo, int a)
 {
 	printf("%ld philo %d is sleeping\n" , get_current_time(), a);
-	usleep(philo->holder[2] * 1000);
+	usleep(philo->holder[3] * 1000);
 }
 
 void		check_time_to_die(t_philo *philo, int a)
@@ -102,13 +102,29 @@ int		check_time_to_die_philo(t_philo *philo)
 	return 0;
 }
 
+int		one_philo(char **tab)
+{
+	t_philo *philo;
+
+	printf("%ld philo 1 has taken a fork \n", get_current_time());
+	usleep(atoi(tab[2]) * 1000);
+	usleep(atoi(tab[3]) * 1000);
+	printf("%ld philo 1 is died \n", get_current_time());
+	return 1;
+}
+
 void		ft_creat_thread(char **tab)
 {
 	int     i;
 	t_philo **philo;
 
-	philo = malloc(sizeof(t_philo) * ft_atoi(tab[1]));
+	if (ft_atoi(tab[1]) == 1)
+	{
+		if (one_philo(tab) == 1)
+			return ;
+	}
 	i = 0;
+	philo = malloc(sizeof(t_philo) * ft_atoi(tab[1]));
 	while (i < ft_atoi(tab[1]))
 	{
 		philo[i] = malloc(sizeof(t_philo));
