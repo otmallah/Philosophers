@@ -8,11 +8,11 @@
 typedef struct s_philo {
     pthread_t       philosophers;
     pthread_mutex_t *mutex;
-    long      save_current_time;
-    long      save_old_time;
-    int             holder[4];
     pthread_mutex_t *fork;
     pthread_mutex_t *next_fork;
+    long            save_current_time;
+    long            save_old_time;
+    int             holder[4];
     int             a;
 }   t_philo;
 
