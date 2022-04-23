@@ -215,6 +215,8 @@ void		ft_creat_thread(char **tab)
 			return ;
 		}
 	}
+	if (check_time_to_die(philo) == 1)
+		return ;
 	while(++i < ft_atoi(tab[1]))
 		pthread_join(philo[i]->philosophers, NULL);
 	i = 0;
