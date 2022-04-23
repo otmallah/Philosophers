@@ -57,15 +57,13 @@ int		number_of_eat(t_philo **philo)
 	{
 		while (i < size)
 		{
-			if (philo[i]->num_of_eat == 1)
+			if (philo[i]->num_of_eat == philo[i]->num_of_eat)
 			{
-				count = count + philo[i]->num_of_eat;
-				//printf("num   *-*-*-*-*-*- %d \n", count);
-				if (count == philo[i]->holder[4])
 					return 1;
 			}
 			i++;
 		}
+		i = 0;
 	}
 	return 0;
 }
@@ -182,7 +180,8 @@ void		ft_creat_thread(char **tab)
 		philo[i]->holder[1] = ft_atoi(tab[2]);
 		philo[i]->holder[2] = ft_atoi(tab[3]);
 		philo[i]->holder[3] = ft_atoi(tab[4]);
-		philo[i]->holder[4] = ft_atoi(tab[5]);
+		if (tab[5])
+			philo[i]->holder[4] = ft_atoi(tab[5]);
 		i++;
 	}
 	i = 0;
@@ -209,9 +208,12 @@ void		ft_creat_thread(char **tab)
 		i++;
 	}
 	i = 0;
-	if (number_of_eat(philo) == 1)
+	if (tab[5])
 	{
-		return ;
+		if (number_of_eat(philo) == 1)
+		{
+			return ;
+		}
 	}
 	while(++i < ft_atoi(tab[1]))
 		pthread_join(philo[i]->philosophers, NULL);
@@ -225,7 +227,7 @@ int main(int ac, char **av)
 {
 	t_philo philo;
 
-	if (ac == 6)
+	if (ac == 6 || ac == 5)
 	{
 		if (checker_input_of_user(av) == 0)
 			ft_creat_thread(av);
