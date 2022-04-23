@@ -2,15 +2,11 @@
 
 void    ft_sleep(int num)
 {
-    int a;
+    long time;
 
-    a = 1;
-    while (a <= num)
-    {
-        printf("a == %d\n" , a);
-        usleep(a * 1000);
-        a++;
-    }
+    time = get_current_time() + num;
+    while (get_current_time() <= time)
+        usleep(100);
 }
 
 int main(int ac, char **av)
