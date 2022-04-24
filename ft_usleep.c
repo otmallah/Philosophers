@@ -17,6 +17,6 @@ void    ft_usleep(int time)
     long    save_time;
 
     save_time = get_current_time() + time;
-    while (get_current_time() < save_time)
+    while (get_current_time() <= save_time)
         usleep(100);
 }
