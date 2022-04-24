@@ -71,13 +71,14 @@ int	check_time_to_die(t_philo **philo)
 	i = 0;
 	a = philo[i]->holder[0];
 	time = philo[i]->holder[1];
+	int save;
 	while (TRUE)
 	{
 		while (i < a)
 		{
 			pthread_mutex_lock(&philo[i]->write);
-				printf("num %ld\n", get_current_time() - philo[i]->save_current_time);
-			if (philo[i]->save_current_time != 0 && get_current_time() - philo[i]->save_current_time > time )
+			save = get_current_time() - philo[i]->save_current_time;
+			if (philo[i]->save_current_time != 0 && save > time )
 			{
 				printf("%ld philo %d died\n", get_current_time(), i);
 				return 1;
