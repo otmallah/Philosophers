@@ -69,6 +69,9 @@ int	check_time_to_die(t_philo **philo)
 	int a;
 	long time;
 	long save = 0;
+	int	num;
+
+	num = philo[i]->holder[4];
 
 	i = 0;
 	a = philo[i]->holder[0];
@@ -85,6 +88,8 @@ int	check_time_to_die(t_philo **philo)
 				return 1;
 			}
 			pthread_mutex_unlock(&philo[i]->sec_write.write);
+			if (philo[i]->num_of_eat > num)
+				return 1;
 			i++;
 		}
 		i = 0;
