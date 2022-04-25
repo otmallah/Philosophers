@@ -72,7 +72,6 @@ int	check_time_to_die(t_philo **philo)
 	int	num;
 
 	num = philo[i]->holder[4];
-
 	i = 0;
 	a = philo[i]->holder[0];
 	time = philo[i]->holder[1];
@@ -87,9 +86,11 @@ int	check_time_to_die(t_philo **philo)
 				printf("%ld philo %d died\n", get_current_time(), philo[i]->a);
 				return 1;
 			}
-			pthread_mutex_unlock(&philo[i]->sec_write.write);
-			if (philo[i]->num_of_eat > num)
+			pthread_mutex_lock(&philo[i]->sec_mutex);
+			if (num != 0 && philo[i]->num_of_eat > num)
 				return 1;
+			pthread_mutex_unlock(&philo[i]->sec_mutex);
+			pthread_mutex_unlock(&philo[i]->sec_write.write);
 			i++;
 		}
 		i = 0;
