@@ -14,8 +14,9 @@ typedef struct s_philo {
 	pthread_t       philosophers;
 	pthread_mutex_t *mutex;
  	pthread_mutex_t *next_fork;
+	pthread_mutex_t sec_mutex;
 	t_write			sec_write;
-	int				save_current_time;
+	long				save_current_time;
 	int				num_of_eat;
 	int             holder[5];
 	int             a;

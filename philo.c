@@ -50,6 +50,7 @@ void	eats_some_spaghetti(t_philo *philo, int a)
 	pthread_mutex_lock(&philo->sec_write.write);
 	printf("%ld philo %d is eating\n", get_current_time(), a);
 	philo->num_of_eat++;
+	//printf("*--*-*-*-*-*-*-**-*-**-*-*-**-*-* %d\n", philo->num_of_eat);
 	pthread_mutex_unlock(&philo->sec_write.write);
 	ft_usleep(philo->holder[2]);
 }
@@ -66,8 +67,8 @@ int	check_time_to_die(t_philo **philo)
 {
 	int i;
 	int a;
-	int time;
-	int save = 0;
+	long time;
+	long save = 0;
 
 	i = 0;
 	a = philo[i]->holder[0];
@@ -106,9 +107,17 @@ int		number_of_eat(t_philo **philo)
 	{
 		while (i < size)
 		{
-			printf("philo %d num of eat %d\n", philo[i]->a, philo[i]->num_of_eat);
+			if (philo[i]->philosophers)
+			{
+				if (philo[i]->num_of_eat == num)
+				{
+					count++;
+				}
+			}
 			i++;
 		}
+		if (count == (size * num))
+			return 1;
 		i = 0;
 	}
 	return 0;
@@ -123,21 +132,26 @@ void    *fun(void *times)
 
 	philo = times;
 	a = philo->a;
+	
 	while (TRUE)
 	{
-		pthread_mutex_lock(&philo->sec_write.write);
+		pthread_mutex_lock(&philo->sec_mutex);
 		save = get_current_time() - philo->save_current_time;
 		if (philo->save_current_time && philo->holder[1] < save)
 			return (NULL);
+		pthread_mutex_unlock(&philo->sec_mutex);
 		pthread_mutex_lock(philo->mutex);
+		pthread_mutex_lock(&philo->sec_write.write);
 		printf("%ld ms philo %d has taken a fork\n", get_current_time(), a);
 		pthread_mutex_unlock(&philo->sec_write.write);
 		pthread_mutex_lock(philo->next_fork);
 		pthread_mutex_lock(&philo->sec_write.write);
 		printf("%ld ms philo %d has taken next fork\n", get_current_time(), a);
 		pthread_mutex_unlock(&philo->sec_write.write);
+		pthread_mutex_lock(&philo->sec_mutex);
 		philo->save_current_time = get_current_time();
 		eats_some_spaghetti(philo, a);
+		pthread_mutex_unlock(&philo->sec_mutex);
 		pthread_mutex_unlock(philo->mutex);
 		pthread_mutex_unlock(philo->next_fork);
 		sleeping(philo, a);
@@ -151,7 +165,7 @@ void    *fun(void *times)
 int		one_philo(char **tab)
 {
 	printf("%ld philo 1 hase taken a fork \n", get_current_time());
-	ft_usleep(ft_atoi(tab[1]));
+	ft_usleep(ft_atoi(tab[2]));
 	printf("%ld philo 1 is died", get_current_time());
 	return 1;
 }
@@ -185,9 +199,11 @@ void 	ft_creat_thread(char **tab)
 		philo[i]->mutex = malloc(sizeof(pthread_mutex_t));
 		philo[i]->next_fork = malloc(sizeof(pthread_mutex_t));
 		pthread_mutex_init(philo[i]->mutex, NULL);
+		pthread_mutex_init(&philo[i]->sec_mutex, NULL);
+		pthread_mutex_init(&philo[i]->sec_write.write, NULL);
 		i++;
 	}
-	i = 1;
+	i = 0;
 	while (i < ft_atoi(tab[1]))
 	{
 		philo[i]->next_fork = philo[(i + 1) % ft_atoi(tab[1])]->mutex;
@@ -198,18 +214,18 @@ void 	ft_creat_thread(char **tab)
 	{
 		philo[i]->a = i + 1;
 		philo[i]->save_current_time = 0;
-		philo[i]->sec_write.num_of_eat = 0;
+		philo[i]->num_of_eat = 0;
 		pthread_create(&philo[i]->philosophers, NULL, fun, (void *)philo[i]);
 		usleep(100);
 		i++;
 	}
-	if (tab[5])
-	{
-		if (number_of_eat(philo) == 1)
-		{
-			return ;
-		}
-	}
+	// if (tab[5])
+	// {
+	// 	if (number_of_eat(philo) == 1)
+	// 	{
+	// 		return ;
+	// 	}
+	// }
 	if (check_time_to_die(philo) == 1)
 	{
 		//puts("hana");
