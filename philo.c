@@ -57,7 +57,7 @@ long	get_current_time(void)
 void	eats_some_spaghetti(t_philo *philo, int a)
 {
 	pthread_mutex_lock(&philo->sec_write.write);
-	printf("%ld philo %d is eating\n", get_current_time(), a);
+	printf("\033[1;34m%ld philo %d is eating\033[1;34m\n", get_current_time(), a);
 	philo->num_of_eat++;
 	pthread_mutex_unlock(&philo->sec_write.write);
 	ft_usleep(philo->holder[2]);
@@ -66,7 +66,7 @@ void	eats_some_spaghetti(t_philo *philo, int a)
 void	sleeping(t_philo *philo, int a)
 {
 	pthread_mutex_lock(&philo->sec_write.write);
-	printf("%ld philo %d is sleeping\n", get_current_time(), a);
+	printf("\033[1;37m%ld philo %d is sleeping\033[1;37m\n", get_current_time(), a);
 	pthread_mutex_unlock(&philo->sec_write.write);
 	ft_usleep(philo->holder[3]);
 }
@@ -107,7 +107,7 @@ int	check_time_to_die(t_philo **philo)
 			save = get_current_time() - philo[i]->save_current_time;
 			if (philo[i]->save_current_time != 0 && save > time)
 			{
-				printf("%ld philo %d died\n", get_current_time(), philo[i]->a);
+				printf("\033[1;31m%ld philo %d died\033[1;31m\n", get_current_time(), philo[i]->a);
 				//ft_free(philo);
 				return (1);
 			}
@@ -142,11 +142,11 @@ void	*fun(void *times)
 		pthread_mutex_unlock(&philo->sec_mutex);
 		pthread_mutex_lock(philo->mutex);
 		pthread_mutex_lock(&philo->sec_write.write);
-		printf("%ld ms philo %d has taken a fork\n", get_current_time(), a);
+		printf("\033[1;32m%ld ms philo %d has taken a fork\033[1;32m\n", get_current_time(), a);
 		pthread_mutex_unlock(&philo->sec_write.write);
 		pthread_mutex_lock(philo->next_fork);
 		pthread_mutex_lock(&philo->sec_write.write);
-		printf("%ld ms philo %d has taken next fork\n", get_current_time(), a);
+		printf("\033[1;32m%ld ms philo %d has taken next fork\033[1;32m\n", get_current_time(), a);
 		pthread_mutex_unlock(&philo->sec_write.write);
 		pthread_mutex_lock(&philo->sec_write.write);
 		philo->save_current_time = get_current_time();
@@ -164,7 +164,7 @@ void	*fun(void *times)
 
 int	one_philo(char **tab)
 {
-	printf("%ld philo 1 hase taken a fork \n", get_current_time());
+	printf("%ld philo 1 hase taken a fork\n", get_current_time());
 	ft_usleep(ft_atoi(tab[2]));
 	printf("%ld philo 1 is died", get_current_time());
 	return (1);
