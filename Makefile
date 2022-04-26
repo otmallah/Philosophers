@@ -11,7 +11,7 @@ AR = ar -rc
 
 RM = @rm -f
 
-FILES =  philo.c philo_utils.c  ft_usleep.c 
+FILES =  philo.c philo_utils.c  ft_usleep.c -lpthread 
 
 # Colors
 C_RED = \033[1;31m
@@ -26,7 +26,7 @@ C_RES = \033[0m
 all : $(NAME)
 
 $(NAME) : $(FILES)
-	$(CC) $(CFLAGS) $(FILES) -o $(NAME) 
+	$(CC) $(CFLAGS) $(FILES) -o $(NAME) -fsanitize=address -g3
 	@echo "$(C_GREEN)[LIBRARY CREATED!]$(C_RES)"
 
 clean :

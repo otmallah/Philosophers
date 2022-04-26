@@ -80,8 +80,8 @@ void	ft_free(t_philo **philo)
 	size = philo[i]->holder[0];
 	while (i < size)
 	{
-		//free(philo[i]);
-		//free(philo[i]->next_fork);
+		free(philo[i]->mutex);
+		free(philo[i]);
 		i++;
 	}
 }
@@ -114,6 +114,7 @@ int	check_time_to_die(t_philo **philo)
 			if (num != 0 && philo[i]->num_of_eat > num)
 			{
 				//ft_free(philo);
+				printf("%ld all philosophers have eaten\n", get_current_time());
 				return (1);
 			}
 			pthread_mutex_unlock(&philo[i]->sec_write.write);
@@ -198,7 +199,6 @@ void	ft_creat_thread(char **tab)
 	while (i < ft_atoi(tab[1]))
 	{
 		philo[i]->mutex = malloc(sizeof(pthread_mutex_t));
-		philo[i]->next_fork = malloc(sizeof(pthread_mutex_t));
 		pthread_mutex_init(philo[i]->mutex, NULL);
 		pthread_mutex_init(&philo[i]->sec_mutex, NULL);
 		pthread_mutex_init(&philo[i]->sec_write.write, NULL);
@@ -222,7 +222,7 @@ void	ft_creat_thread(char **tab)
 	}
 	if (check_time_to_die(philo) == 1)
 	{
-		system("leaks philo");
+		free(philo);
 		return ;
 	}
 	i = 0;

@@ -55,12 +55,10 @@ static long	ft_check(const char *str, int i, int n)
 int	ft_atoi(const char *str)
 {
 	long	number;
-	long	help;
 	int		sign;
 	int		n;
 
 	number = 0;
-	help = 0;
 	sign = 1;
 	n = 0;
 	while (str[n] == '\f' || str[n] == '\n' || str[n] == 32
