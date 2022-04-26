@@ -71,21 +71,6 @@ void	sleeping(t_philo *philo, int a)
 	ft_usleep(philo->holder[3]);
 }
 
-void	ft_free(t_philo **philo)
-{
-	int i;
-	int size;
-
-	i = 0;
-	size = philo[i]->holder[0];
-	while (i < size)
-	{
-		free(philo[i]->mutex);
-		free(philo[i]);
-		i++;
-	}
-}
-
 int	check_time_to_die(t_philo **philo)
 {
 	int		i;
@@ -108,15 +93,15 @@ int	check_time_to_die(t_philo **philo)
 			if (philo[i]->save_current_time != 0 && save > time)
 			{
 				printf("\033[1;31m%ld philo %d died\033[1;31m\n", get_current_time(), philo[i]->a);
-				//ft_free(philo);
 				return (1);
 			}
+			pthread_mutex_lock(&philo[i]->sec_mutex);
 			if (num != 0 && philo[i]->num_of_eat > num)
 			{
-				//ft_free(philo);
 				printf("%ld all philosophers have eaten\n", get_current_time());
 				return (1);
 			}
+			pthread_mutex_unlock(&philo[i]->sec_mutex);
 			pthread_mutex_unlock(&philo[i]->sec_write.write);
 			i++;
 		}
@@ -148,11 +133,10 @@ void	*fun(void *times)
 		pthread_mutex_lock(&philo->sec_write.write);
 		printf("\033[1;32m%ld ms philo %d has taken next fork\033[1;32m\n", get_current_time(), a);
 		pthread_mutex_unlock(&philo->sec_write.write);
-		pthread_mutex_lock(&philo->sec_write.write);
+		pthread_mutex_lock(&philo->sec_mutex);
 		philo->save_current_time = get_current_time();
-		pthread_mutex_unlock(&philo->sec_write.write);
-		eats_some_spaghetti(philo, a);
 		pthread_mutex_unlock(&philo->sec_mutex);
+		eats_some_spaghetti(philo, a);
 		pthread_mutex_unlock(philo->mutex);
 		pthread_mutex_unlock(philo->next_fork);
 		sleeping(philo, a);
@@ -199,9 +183,12 @@ void	ft_creat_thread(char **tab)
 	while (i < ft_atoi(tab[1]))
 	{
 		philo[i]->mutex = malloc(sizeof(pthread_mutex_t));
-		pthread_mutex_init(philo[i]->mutex, NULL);
-		pthread_mutex_init(&philo[i]->sec_mutex, NULL);
-		pthread_mutex_init(&philo[i]->sec_write.write, NULL);
+		if (pthread_mutex_init(philo[i]->mutex, NULL) != 0)
+			write(2, "Failed init thread\n", 20);
+		if (pthread_mutex_init(&philo[i]->sec_mutex, NULL) != 0)
+			write(2, "Failed init thread\n", 20);
+		if (pthread_mutex_init(&philo[i]->sec_write.write, NULL) != 0)
+			write(2, "Failed init thread\n", 20);
 		i++;
 	}
 	i = 0;
@@ -214,9 +201,10 @@ void	ft_creat_thread(char **tab)
 	while (i < ft_atoi(tab[1]))
 	{
 		philo[i]->a = i + 1;
-		philo[i]->save_current_time = 0;
 		philo[i]->num_of_eat = 0;
-		pthread_create(&philo[i]->philosophers, NULL, fun, (void *)philo[i]);
+		philo[i]->save_current_time = 0;
+		if ( pthread_create(&philo[i]->philosophers, NULL, fun, (void *)philo[i]) != 0)
+			write(2, "Faild create thread\n" ,20);
 		usleep(100);
 		i++;
 	}
