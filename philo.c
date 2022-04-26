@@ -95,13 +95,13 @@ int	check_time_to_die(t_philo **philo)
 				printf("\033[1;31m%ld philo %d died\033[1;31m\n", get_current_time(), philo[i]->a);
 				return (1);
 			}
-			pthread_mutex_lock(&philo[i]->sec_mutex);
+			//pthread_mutex_lock(&philo[i]->sec_mutex);
 			if (num != 0 && philo[i]->num_of_eat > num)
 			{
-				printf("%ld all philosophers have eaten\n", get_current_time());
+				printf("%ld all philosophers hase eaten\n", get_current_time());
 				return (1);
 			}
-			pthread_mutex_unlock(&philo[i]->sec_mutex);
+			//pthread_mutex_unlock(&philo[i]->sec_mutex);
 			pthread_mutex_unlock(&philo[i]->sec_write.write);
 			i++;
 		}
@@ -148,10 +148,46 @@ void	*fun(void *times)
 
 int	one_philo(char **tab)
 {
-	printf("%ld philo 1 hase taken a fork\n", get_current_time());
-	ft_usleep(ft_atoi(tab[2]));
-	printf("%ld philo 1 is died", get_current_time());
-	return (1);
+	if (ft_atoi(tab[1]) == 1)
+	{
+		printf("\033[1;32m%ld philo 1 hase taken a fork\033[1;32m\n", get_current_time());
+		ft_usleep(ft_atoi(tab[2]));
+		printf("\033[1;31m%ld philo 1 is died\033[1;31m\n", get_current_time());
+		return (1);
+	}
+	return 0;
+}
+
+int		all_routine(t_philo **philo, char **tab)
+{
+	int i;
+
+	i = -1;
+	while (++i < ft_atoi(tab[1]))
+		philo[i]->next_fork = philo[(i + 1) % ft_atoi(tab[1])]->mutex;
+	i = 0;
+	while (i < ft_atoi(tab[1]))
+	{
+		philo[i]->a = i + 1;
+		philo[i]->num_of_eat = 0;
+		philo[i]->save_current_time = 0;
+		if (pthread_create(&philo[i]->philosophers, NULL, fun, (void *)philo[i]) != 0)
+			write(2, "Faild create thread\n" ,20);
+		usleep(100);
+		i++;
+	}
+	if (check_time_to_die(philo) == 1)
+	{
+		free(philo);
+		return 1;
+	}
+	i = 0;
+	while (i++ < ft_atoi(tab[1]))
+		pthread_join(philo[i]->philosophers, NULL);
+	i = 0;
+	while (i++ < ft_atoi(tab[1]))
+		pthread_mutex_destroy(philo[i]->mutex);
+	return 0;
 }
 
 void	ft_creat_thread(char **tab)
@@ -159,11 +195,8 @@ void	ft_creat_thread(char **tab)
 	int		i;
 	t_philo	**philo;
 
-	if (ft_atoi(tab[1]) == 1)
-	{
-		if (one_philo(tab) == 1)
-			return ;
-	}
+	if (one_philo(tab) == 1)
+		return ;
 	philo = malloc(sizeof(t_philo) * ft_atoi(tab[1]));
 	i = 0;
 	while (i < ft_atoi(tab[1]))
@@ -189,36 +222,12 @@ void	ft_creat_thread(char **tab)
 			write(2, "Failed init thread\n", 20);
 		if (pthread_mutex_init(&philo[i]->sec_write.write, NULL) != 0)
 			write(2, "Failed init thread\n", 20);
+		
 		i++;
 	}
 	i = 0;
-	while (i < ft_atoi(tab[1]))
-	{
-		philo[i]->next_fork = philo[(i + 1) % ft_atoi(tab[1])]->mutex;
-		i++;
-	}
-	i = 0;
-	while (i < ft_atoi(tab[1]))
-	{
-		philo[i]->a = i + 1;
-		philo[i]->num_of_eat = 0;
-		philo[i]->save_current_time = 0;
-		if ( pthread_create(&philo[i]->philosophers, NULL, fun, (void *)philo[i]) != 0)
-			write(2, "Faild create thread\n" ,20);
-		usleep(100);
-		i++;
-	}
-	if (check_time_to_die(philo) == 1)
-	{
-		free(philo);
+	if (all_routine(philo, tab) == 1)
 		return ;
-	}
-	i = 0;
-	while (i++ < ft_atoi(tab[1]))
-		pthread_join(philo[i]->philosophers, NULL);
-	i = 0;
-	while (i++ < ft_atoi(tab[1]))
-		pthread_mutex_destroy(philo[i]->mutex);
 }
 
 int	main(int ac, char **av)
