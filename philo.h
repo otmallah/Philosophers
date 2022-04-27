@@ -35,7 +35,7 @@ typedef struct s_philo {
 	int				a;
 }	t_philo;
 
-int		ft_atoi(const char *str);
+long long int	ft_atoi(char *str);
 int		ft_strcmp(char *s1, char *s2);
 long	get_current_time(void);
 void	ft_usleep(int time);

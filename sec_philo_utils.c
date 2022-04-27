@@ -56,10 +56,8 @@ void	sleeping(t_philo *philo, int a)
 int	checker_input_of_user(char **info_philo_tab)
 {
 	int	i;
-	int	j;
 
 	i = 1;
-	j = 0;
 	if (ft_strcmp(info_philo_tab[i], "-1") == 0
 		|| ft_strcmp(info_philo_tab[i], "0") == 0)
 	{

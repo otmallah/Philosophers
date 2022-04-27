@@ -26,7 +26,7 @@ C_RES = \033[0m
 all : $(NAME)
 
 $(NAME) : $(FILES)
-	$(CC) $(CFLAGS) $(FILES) -o $(NAME) -fsanitize=address -g3
+	$(CC) $(CFLAGS) $(FILES) -o $(NAME) -lpthread
 	@echo "$(C_GREEN)[LIBRARY CREATED!]$(C_RES)"
 
 clean :

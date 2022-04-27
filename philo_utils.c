@@ -26,53 +26,21 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-static long	ft_check(const char *str, int i, int n)
+long long int	ft_atoi(char *str)
 {
-	long	number;
-	long	help;
+	int			i;
+	long long int r;
 
-	number = 0;
-	help = 0;
-	while (str[n] >= '0' && str[n] <= '9')
+	i = 0;
+	r = 0;
+	while (str[i] >= '0' && str[i] <= '9')
 	{
-		help = 10 * help + (str[n] - '0');
-		if (i == -1)
-		{
-			if ((help / 10) != number)
-				return (0);
-		}
-		if (i == 1)
-		{
-			if ((help / 10) != number)
-				return (-1);
-		}
-		number = 10 * number + (str[n] - '0');
-		n++;
+		r = (str[i] - 48) + (r * 10);
+		if (str[i + 1] < '0' || str[i + 1] > '9')
+			return (r);
+		i++;
 	}
-	return (number * i);
-}
-
-int	ft_atoi(const char *str)
-{
-	long	number;
-	int		sign;
-	int		n;
-
-	number = 0;
-	sign = 1;
-	n = 0;
-	while (str[n] == '\f' || str[n] == '\n' || str[n] == 32
-		|| str[n] == '\r' || str[n] == '\v' || str[n] == '\t')
-		n++;
-	if (str[n] == '-')
-	{
-		sign *= -1;
-		n++;
-	}
-	else if (str[n] == '+')
-		n++;
-	number = ft_check(str, sign, n);
-	return (number);
+	return (0);
 }
 
 int	checker(char	**info_philo_tab)
