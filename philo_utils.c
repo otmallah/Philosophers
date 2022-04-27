@@ -6,7 +6,7 @@
 /*   By: otmallah <otmallah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/26 01:18:54 by otmallah          #+#    #+#             */
-/*   Updated: 2022/04/26 01:51:04 by otmallah         ###   ########.fr       */
+/*   Updated: 2022/04/27 00:46:34 by otmallah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,38 @@ int	ft_atoi(const char *str)
 		n++;
 	number = ft_check(str, sign, n);
 	return (number);
+}
+
+int	checker(char	**info_philo_tab)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	j = 0;
+	while (info_philo_tab[i])
+	{
+		while (info_philo_tab[i][j])
+		{
+			if (info_philo_tab[i][j] >= '0' && info_philo_tab[i][j] <= '9')
+				j++;
+			else
+			{
+				write (2, "ERROR :Only integer num\n", 25);
+				return (1);
+			}
+		}
+		j = 0;
+		i++;
+	}
+	return (0);
+}
+
+void	norme(t_philo **philo, char **tab)
+{
+	int	i;
+
+	i = -1;
+	while (++i < ft_atoi(tab[1]))
+		philo[i]->next_fork = philo[(i + 1) % ft_atoi(tab[1])]->mutex;
 }

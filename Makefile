@@ -11,7 +11,7 @@ AR = ar -rc
 
 RM = @rm -f
 
-FILES =  philo.c philo_utils.c  ft_usleep.c -lpthread 
+FILES =  philo.c philo_utils.c  ft_usleep.c sec_philo_utils.c
 
 # Colors
 C_RED = \033[1;31m
